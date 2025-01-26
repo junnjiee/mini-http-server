@@ -1,4 +1,6 @@
 import java.util.Map;
+import java.util.function.Supplier;
+
 import static java.util.Map.entry;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +25,7 @@ import java.nio.file.Path;
 public abstract class Routes {
     protected static String httpVersion = "HTTP/1.1";
     protected static String htmlDir = "./html";
+    protected static Map<String, Supplier<String>> routes;
 
     /**
      * Only implements 200, 404 and 500 statuses for simplicity
@@ -41,7 +44,7 @@ public abstract class Routes {
      * Built in response for status code 404 that can be overridden
      **/
     public static String error_404() {
-        String response = httpVersion + "404" + statusTitles.get(404);
+        String response = httpVersion + " " + "404" + " " + statusTitles.get(404);
         String contentType = "Content-Type: text/html; charset=UTF-8";
         return response + "\n" + contentType + "\n\n" + "<html><body><h1>404 Not Found</h1></body></html>";
     }
@@ -50,7 +53,7 @@ public abstract class Routes {
      * Built in response for status code 500 that can be overridden
      **/
     public static String error_500() {
-        String response = httpVersion + "500" + statusTitles.get(500);
+        String response = httpVersion + " " + "500" + " " + statusTitles.get(500);
         String contentType = "Content-Type: text/html; charset=UTF-8";
         return response + "\n" + contentType + "\n\n" + "<html><body><h1>500 Internal Server Error</h1></body></html>";
     }

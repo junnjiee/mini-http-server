@@ -1,11 +1,13 @@
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.List;
 
+/**
+ * Implements a simplified HTTP server with plain Java. The goal of building
+ * this is to learn how a HTTP server works and learn Java at the same time.
+ * <p>
+ * IMPORTANT: This may not be the correct way of building a HTTP server, it is
+ * merely just my attempt at building one that works.
+ **/
 public class HttpServer {
     private ServerSocket serverSocket;
     private int port;
@@ -20,18 +22,9 @@ public class HttpServer {
 
             while (true) {
                 // method blocks until there is a connection
-                Socket clientSocket = serverSocket.accept();
-                BufferedReader bufferedInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                PrintWriter outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
-
-                List<String> requestParams = HttpRequestParser.parse(bufferedInput);
-                String response = HttpRequestHandler.handle(requestParams);
-
-                outputWriter.println(response);
-                clientSocket.close();
+                new ConnectionHandler(serverSocket.accept()).run();
             }
-
-        } catch (IOException | InvalidHttpRequestException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return;
         }

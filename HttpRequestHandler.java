@@ -1,5 +1,6 @@
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Handles HTTP requests and returns a HTTP response. Currently only supports
@@ -22,19 +23,16 @@ public class HttpRequestHandler {
 
             switch (httpMethod) {
                 case HttpMethodsEnum.GET:
-                    if (route == "") {
-                        route = "index";
+                    Map<String, Supplier<String>> routes = GETRoutes.routes();
+
+                    if (routes.containsKey(route)) {
+                        return routes.get(route).get();
                     }
-                    GETRoutes httpMethodRoutes = new GETRoutes();
-                    java.lang.reflect.Method routeFn = httpMethodRoutes.getClass().getMethod(route);
-                    return (String) routeFn.invoke(httpMethodRoutes);
+                    break;
                 default:
                     throw new InvalidHttpRequestException("Server currently only supports GET requests");
             }
 
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            // method could not be found, in this case return a 404 error
-            e.printStackTrace();
             return GETRoutes.error_404();
 
         } catch (IllegalArgumentException e) {
