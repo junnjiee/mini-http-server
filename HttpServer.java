@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HttpServer {
@@ -22,45 +21,19 @@ public class HttpServer {
             while (true) {
                 // method blocks until there is a connection
                 Socket clientSocket = serverSocket.accept();
-
-                BufferedReader inputBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                BufferedReader bufferedInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 PrintWriter outputWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 
-                // get the full HTTP request as a string
-                List<String> requestList = new ArrayList<String>();
-                String line;
-                while ((line = inputBuffer.readLine()) != null && !line.isEmpty()) {
-                    requestList.add(line);
-                }
-                String request = String.join("\n", requestList);
-                System.out.println("REQUEST:");
-                System.out.println(request);
+                List<String> requestParams = HttpRequestParser.parse(bufferedInput);
+                String response = HttpRequestHandler.handle(requestParams);
 
-                // parse the request
-                String[] requestTypeList = requestList.get(0).split(" ");
-                String method = requestTypeList[0];
-                String route = requestTypeList[1];
-
-                if (method == "GET") {
-                    if (route == "/") {
-                        
-                    }
-                }
-
-                // send back something
-                // Prepare a simple HTTP response
-                String httpResponse = "HTTP/1.1 200 OK\r\n"
-                        + "Content-Type: text/html\r\n"
-                        + "\r\n"
-                        + "<html><body><h1>Hello, World!</h1></body></html>";
-                outputWriter.println(httpResponse);
+                outputWriter.println(response);
                 clientSocket.close();
             }
 
-        } catch (IOException i) {
-            System.err.println(i);
+        } catch (IOException | InvalidHttpRequestException e) {
+            e.printStackTrace();
             return;
         }
-
     }
 }
