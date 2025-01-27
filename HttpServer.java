@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * Implements a simplified HTTP server with plain Java. The goal of building
@@ -22,7 +23,9 @@ public class HttpServer {
 
             while (true) {
                 // method blocks until there is a connection
-                new ConnectionHandler(serverSocket.accept()).run();
+                Socket clientSocket = serverSocket.accept();
+                new Thread(new ConnectionHandler(clientSocket)).start();
+                System.out.println("threads:" + Thread.activeCount());
             }
         } catch (IOException e) {
             e.printStackTrace();

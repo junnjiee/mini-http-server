@@ -9,13 +9,14 @@ import java.util.List;
  * Creates a new thread that handles the new connection. This ensures that the
  * server can handle multiple concurrent requests.
  **/
-public class ConnectionHandler extends Thread {
+public class ConnectionHandler implements Runnable {
     private Socket clientSocket;
 
     public ConnectionHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
+    @Override
     public void run() {
         try {
             BufferedReader bufferedInput = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
